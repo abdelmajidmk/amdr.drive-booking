@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { z } from "zod";
 import { motion, AnimatePresence } from "motion/react";
-import { X, MessageCircle, Calendar, User, Phone, MapPin, Car as CarIcon } from "lucide-react";
+import { X, MessageCircle, Calendar as CalIcon, User, Phone, MapPin, Car as CarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export const CARS = [
   { name: "Volkswagen T-Roc 2026", price: 800 },
@@ -190,21 +195,23 @@ export function ReservationDialog({
                   />
                 </Field>
 
-                <Field label="Date de début" icon={Calendar} error={errors.startDate}>
-                  <input
-                    type="date"
-                    className={inputCls}
+                <Field label="Date de début" icon={CalIcon} error={errors.startDate}>
+                  <DateField
                     value={values.startDate}
-                    onChange={(e) => set("startDate", e.target.value)}
+                    onChange={(v) => set("startDate", v)}
+                    minDate={new Date(new Date().setHours(0, 0, 0, 0))}
                   />
                 </Field>
 
-                <Field label="Date de fin" icon={Calendar} error={errors.endDate}>
-                  <input
-                    type="date"
-                    className={inputCls}
+                <Field label="Date de fin" icon={CalIcon} error={errors.endDate}>
+                  <DateField
                     value={values.endDate}
-                    onChange={(e) => set("endDate", e.target.value)}
+                    onChange={(v) => set("endDate", v)}
+                    minDate={
+                      values.startDate
+                        ? new Date(values.startDate)
+                        : new Date(new Date().setHours(0, 0, 0, 0))
+                    }
                   />
                 </Field>
 
@@ -280,5 +287,47 @@ function Field({
       {children}
       {error && <span className="block mt-1.5 text-xs text-destructive">{error}</span>}
     </label>
+  );
+}
+
+function DateField({
+  value,
+  onChange,
+  minDate,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  minDate?: Date;
+}) {
+  const date = value ? new Date(value) : undefined;
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "w-full h-11 px-4 rounded-xl bg-background/60 border border-border text-left text-sm flex items-center justify-between hover:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/30 transition",
+            !date && "text-muted-foreground"
+          )}
+        >
+          {date ? format(date, "PPP", { locale: fr }) : "Choisir une date"}
+          <CalIcon className="h-4 w-4 text-primary opacity-80" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-auto p-0 z-[200] bg-popover border-border"
+        align="start"
+      >
+        <Calendar
+          mode="single"
+          locale={fr}
+          selected={date}
+          onSelect={(d) => onChange(d ? format(d, "yyyy-MM-dd") : "")}
+          disabled={(d) => (minDate ? d < minDate : false)}
+          initialFocus
+          className={cn("p-3 pointer-events-auto")}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }
