@@ -6,6 +6,7 @@ import { Advantages } from "@/components/site/Advantages";
 import { Contact } from "@/components/site/Contact";
 import { Footer } from "@/components/site/Footer";
 import { WhatsAppFab } from "@/components/site/WhatsAppFab";
+import { ReservationProvider } from "@/components/site/ReservationProvider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,16 +30,18 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <Navbar />
-      <main>
-        <Hero />
-        <Fleet />
-        <Advantages />
-        <Contact />
-      </main>
-      <Footer />
-      <WhatsAppFab />
-    </div>
+    <ReservationProvider>
+      <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+        <Navbar />
+        <main>
+          <Hero />
+          <Fleet />
+          <Advantages />
+          <Contact />
+        </main>
+        <Footer />
+        <WhatsAppFab />
+      </div>
+    </ReservationProvider>
   );
 }
