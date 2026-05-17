@@ -1,0 +1,284 @@
+import { useState } from "react";
+import { z } from "zod";
+import { motion, AnimatePresence } from "motion/react";
+import { X, MessageCircle, Calendar, User, Phone, MapPin, Car as CarIcon } from "lucide-react";
+
+export const CARS = [
+  { name: "Volkswagen T-Roc 2026", price: 800 },
+  { name: "Peugeot 208 2026", price: 400 },
+  { name: "Opel Corsa 2026", price: 400 },
+] as const;
+
+const schema = z.object({
+  name: z.string().trim().min(2, "Nom trop court").max(80, "Nom trop long"),
+  phone: z
+    .string()
+    .trim()
+    .min(8, "Numéro invalide")
+    .max(20, "Numéro invalide")
+    .regex(/^[0-9+\s()-]+$/, "Numéro invalide"),
+  car: z.string().min(1, "Choisissez un véhicule"),
+  pickup: z.string().trim().min(2, "Lieu requis").max(100),
+  startDate: z.string().min(1, "Date requise"),
+  endDate: z.string().min(1, "Date requise"),
+  notes: z.string().trim().max(400, "Message trop long").optional(),
+});
+
+type FormValues = z.infer<typeof schema>;
+
+function priceOf(name: string) {
+  return CARS.find((c) => c.name === name)?.price ?? 0;
+}
+
+function daysBetween(a: string, b: string) {
+  if (!a || !b) return 0;
+  const d = (new Date(b).getTime() - new Date(a).getTime()) / 86400000;
+  return d > 0 ? Math.ceil(d) : d === 0 ? 1 : 0;
+}
+
+export function ReservationDialog({
+  open,
+  onClose,
+  defaultCar,
+}: {
+  open: boolean;
+  onClose: () => void;
+  defaultCar?: string;
+}) {
+  const [values, setValues] = useState<FormValues>({
+    name: "",
+    phone: "",
+    car: defaultCar ?? CARS[0].name,
+    pickup: "",
+    startDate: "",
+    endDate: "",
+    notes: "",
+  });
+  const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
+
+  // sync default car when opened
+  if (open && defaultCar && values.car !== defaultCar && !errors.car) {
+    // only update once when defaultCar provided
+  }
+
+  const days = daysBetween(values.startDate, values.endDate);
+  const total = days * priceOf(values.car);
+
+  const set = <K extends keyof FormValues>(k: K, v: FormValues[K]) => {
+    setValues((s) => ({ ...s, [k]: v }));
+    setErrors((e) => ({ ...e, [k]: undefined }));
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = schema.safeParse(values);
+    if (!parsed.success) {
+      const errs: Partial<Record<keyof FormValues, string>> = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0] as keyof FormValues;
+        if (!errs[key]) errs[key] = issue.message;
+      }
+      setErrors(errs);
+      return;
+    }
+    const v = parsed.data;
+    const d = daysBetween(v.startDate, v.endDate);
+    const t = d * priceOf(v.car);
+    const msg =
+      `Bonjour AM Drive 👋\n\n` +
+      `Je souhaite réserver un véhicule :\n\n` +
+      `👤 Nom : ${v.name}\n` +
+      `📞 Téléphone : ${v.phone}\n` +
+      `🚗 Véhicule : ${v.car}\n` +
+      `📍 Lieu de prise en charge : ${v.pickup}\n` +
+      `📅 Du : ${v.startDate}\n` +
+      `📅 Au : ${v.endDate}\n` +
+      `⏱ Durée : ${d} jour(s)\n` +
+      `💰 Tarif estimé : ${t} DH (${priceOf(v.car)} DH/jour)\n` +
+      (v.notes ? `\n📝 Notes : ${v.notes}\n` : "") +
+      `\nMerci de me confirmer la disponibilité.`;
+    const url = `https://wa.me/212704957685?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+    onClose();
+  };
+
+  const inputCls =
+    "w-full h-11 px-4 rounded-xl bg-background/60 border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 transition text-sm";
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-md"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ y: 40, opacity: 0, scale: 0.96 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 20, opacity: 0, scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 220, damping: 24 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-primary/30 bg-card shadow-[var(--shadow-elegant)]"
+          >
+            <button
+              type="button"
+              aria-label="Fermer"
+              onClick={onClose}
+              className="absolute top-4 right-4 h-10 w-10 grid place-items-center rounded-full border border-border hover:border-primary hover:bg-primary/10 transition z-10"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="p-8 sm:p-10">
+              <div className="text-xs tracking-[0.3em] uppercase text-primary mb-2">
+                Réservation
+              </div>
+              <h3 className="font-display text-2xl sm:text-3xl font-black text-silver">
+                RÉSERVEZ VOTRE <span className="text-gradient">VÉHICULE</span>
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Remplissez le formulaire — votre demande sera envoyée directement sur
+                WhatsApp à AM Drive.
+              </p>
+
+              <form onSubmit={submit} className="mt-7 grid sm:grid-cols-2 gap-5">
+                <Field label="Nom complet" icon={User} error={errors.name}>
+                  <input
+                    className={inputCls}
+                    value={values.name}
+                    onChange={(e) => set("name", e.target.value)}
+                    placeholder="Votre nom"
+                    maxLength={80}
+                  />
+                </Field>
+
+                <Field label="Téléphone" icon={Phone} error={errors.phone}>
+                  <input
+                    className={inputCls}
+                    value={values.phone}
+                    onChange={(e) => set("phone", e.target.value)}
+                    placeholder="06 12 34 56 78"
+                    inputMode="tel"
+                    maxLength={20}
+                  />
+                </Field>
+
+                <Field label="Véhicule" icon={CarIcon} error={errors.car} className="sm:col-span-2">
+                  <select
+                    className={inputCls}
+                    value={values.car}
+                    onChange={(e) => set("car", e.target.value)}
+                  >
+                    {CARS.map((c) => (
+                      <option key={c.name} value={c.name}>
+                        {c.name} — {c.price} DH / jour
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+
+                <Field label="Lieu de prise en charge" icon={MapPin} error={errors.pickup} className="sm:col-span-2">
+                  <input
+                    className={inputCls}
+                    value={values.pickup}
+                    onChange={(e) => set("pickup", e.target.value)}
+                    placeholder="Ville, aéroport, adresse…"
+                    maxLength={100}
+                  />
+                </Field>
+
+                <Field label="Date de début" icon={Calendar} error={errors.startDate}>
+                  <input
+                    type="date"
+                    className={inputCls}
+                    value={values.startDate}
+                    onChange={(e) => set("startDate", e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Date de fin" icon={Calendar} error={errors.endDate}>
+                  <input
+                    type="date"
+                    className={inputCls}
+                    value={values.endDate}
+                    onChange={(e) => set("endDate", e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Notes (optionnel)" error={errors.notes} className="sm:col-span-2">
+                  <textarea
+                    className={`${inputCls} h-24 py-3 resize-none`}
+                    value={values.notes}
+                    onChange={(e) => set("notes", e.target.value)}
+                    placeholder="Détails supplémentaires…"
+                    maxLength={400}
+                  />
+                </Field>
+
+                {/* Summary */}
+                <div className="sm:col-span-2 flex items-center justify-between gap-4 p-4 rounded-xl bg-primary/10 border border-primary/30">
+                  <div className="text-xs uppercase tracking-widest text-muted-foreground">
+                    Total estimé
+                  </div>
+                  <div className="font-display text-2xl text-gradient">
+                    {total > 0 ? `${total} DH` : "—"}
+                    {days > 0 && (
+                      <span className="text-sm text-muted-foreground font-sans ml-2">
+                        · {days} jour(s)
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2 flex flex-wrap gap-3 pt-1">
+                  <button
+                    type="submit"
+                    className="group inline-flex items-center gap-3 px-7 h-13 py-3 rounded-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-semibold shadow-[0_0_40px_oklch(0.62_0.22_255_/_0.5)] hover:shadow-[0_0_60px_oklch(0.62_0.22_255_/_0.8)] hover:scale-[1.02] transition"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    Envoyer sur WhatsApp
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-6 py-3 rounded-full border border-border text-silver hover:border-primary hover:bg-primary/10 transition"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function Field({
+  label,
+  icon: Icon,
+  error,
+  className,
+  children,
+}: {
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  error?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className={`block ${className ?? ""}`}>
+      <span className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground mb-2">
+        {Icon && <Icon className="h-3.5 w-3.5 text-primary" />}
+        {label}
+      </span>
+      {children}
+      {error && <span className="block mt-1.5 text-xs text-destructive">{error}</span>}
+    </label>
+  );
+}

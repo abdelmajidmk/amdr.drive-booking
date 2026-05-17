@@ -1,8 +1,10 @@
 import { motion } from "motion/react";
 import heroImg from "@/assets/hero.jpg";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { useReservation } from "./ReservationProvider";
 
 export function Hero() {
+  const { open } = useReservation();
   return (
     <section id="top" className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background image */}
@@ -87,14 +89,13 @@ export function Hero() {
             Découvrir la flotte
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition" />
           </a>
-          <a
-            href="https://wa.me/212704957685?text=Bonjour%20AM%20Drive%2C%20je%20souhaite%20r%C3%A9server%20un%20v%C3%A9hicule."
-            target="_blank"
-            rel="noreferrer"
+          <button
+            type="button"
+            onClick={() => open()}
             className="inline-flex items-center gap-3 px-8 h-14 rounded-full border border-border bg-card/40 backdrop-blur-md text-silver font-medium hover:border-primary hover:bg-primary/10 transition-all"
           >
-            Réserver sur WhatsApp
-          </a>
+            Réserver maintenant
+          </button>
         </motion.div>
 
         {/* Stats */}

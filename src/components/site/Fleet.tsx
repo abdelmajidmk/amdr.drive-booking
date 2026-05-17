@@ -12,6 +12,7 @@ import {
   Check,
   MessageCircle,
 } from "lucide-react";
+import { useReservation } from "./ReservationProvider";
 
 type Car = {
   name: string;
@@ -91,12 +92,8 @@ const cars: Car[] = [
   },
 ];
 
-function whatsappUrl(car: Car) {
-  const msg = `Bonjour AM Drive 👋\n\nJe souhaite réserver :\n🚗 ${car.name}\n💰 Tarif : ${car.pricePerDay} DH / jour\n\nMerci de me communiquer les disponibilités.`;
-  return `https://wa.me/212704957685?text=${encodeURIComponent(msg)}`;
-}
-
 export function Fleet() {
+  const { open } = useReservation();
   return (
     <section id="flotte" className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-20" />
@@ -207,15 +204,14 @@ export function Fleet() {
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-border flex flex-wrap gap-3">
-                    <a
-                      href={whatsappUrl(car)}
-                      target="_blank"
-                      rel="noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => open(car.name)}
                       className="group/btn inline-flex items-center gap-2 px-6 h-12 rounded-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-semibold shadow-[0_0_30px_oklch(0.62_0.22_255_/_0.4)] hover:shadow-[0_0_50px_oklch(0.62_0.22_255_/_0.7)] hover:scale-[1.02] transition-all"
                     >
                       <MessageCircle className="h-4 w-4" />
-                      Réserver sur WhatsApp
-                    </a>
+                      Réserver maintenant
+                    </button>
                     <a
                       href="tel:+212704957685"
                       className="inline-flex items-center gap-2 px-6 h-12 rounded-full border border-border text-silver font-medium hover:border-primary hover:bg-primary/10 transition"

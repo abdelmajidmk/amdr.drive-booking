@@ -1,7 +1,9 @@
 import { motion } from "motion/react";
 import { Phone, MessageCircle, Instagram, Calendar } from "lucide-react";
+import { useReservation } from "./ReservationProvider";
 
 export function Contact() {
+  const { open } = useReservation();
   return (
     <section id="contact" className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-20" />
@@ -34,15 +36,14 @@ export function Contact() {
             </p>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <a
-                href="https://wa.me/212704957685?text=Bonjour%20AM%20Drive%2C%20je%20souhaite%20r%C3%A9server%20un%20v%C3%A9hicule."
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={() => open()}
                 className="inline-flex items-center gap-3 px-8 h-14 rounded-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-semibold shadow-[0_0_40px_oklch(0.62_0.22_255_/_0.5)] hover:shadow-[0_0_60px_oklch(0.62_0.22_255_/_0.8)] hover:scale-105 transition-all"
               >
                 <MessageCircle className="h-5 w-5" />
-                WhatsApp · 0704 957 685
-              </a>
+                Réserver maintenant
+              </button>
               <a
                 href="tel:+212704957685"
                 className="inline-flex items-center gap-3 px-8 h-14 rounded-full border border-border text-silver font-medium hover:border-primary hover:bg-primary/10 transition"
