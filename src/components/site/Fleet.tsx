@@ -27,7 +27,7 @@ const cars: Car[] = [
     name: "Volkswagen T-Roc 2026",
     qty: "2x",
     img: troc,
-    pricePerDay: 450,
+    pricePerDay: 800,
     specs: [
       { icon: Settings2, label: "Boîte automatique" },
       { icon: Fuel, label: "Essence" },
@@ -49,7 +49,7 @@ const cars: Car[] = [
     name: "Peugeot 208 2026",
     qty: "2x",
     img: p208,
-    pricePerDay: 350,
+    pricePerDay: 400,
     specs: [
       { icon: Settings2, label: "Boîte automatique" },
       { icon: Fuel, label: "Essence" },
@@ -71,7 +71,7 @@ const cars: Car[] = [
     name: "Opel Corsa 2026",
     qty: "3x",
     img: corsa,
-    pricePerDay: 300,
+    pricePerDay: 400,
     specs: [
       { icon: Settings2, label: "Boîte automatique" },
       { icon: Fuel, label: "Essence" },
