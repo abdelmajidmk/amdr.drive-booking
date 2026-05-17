@@ -1,26 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Navbar } from "@/components/site/Navbar";
+import { Hero } from "@/components/site/Hero";
+import { Fleet } from "@/components/site/Fleet";
+import { Advantages } from "@/components/site/Advantages";
+import { Contact } from "@/components/site/Contact";
+import { Footer } from "@/components/site/Footer";
+import { WhatsAppFab } from "@/components/site/WhatsAppFab";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "AM Drive — Location de voitures premium 2026 au Maroc" },
+      {
+        name: "description",
+        content:
+          "AM Drive : location de voitures 2026 automatiques. Volkswagen T-Roc, Peugeot 208, Opel Corsa. Réservation rapide WhatsApp · 0704 957 685.",
+      },
+      { property: "og:title", content: "AM Drive — Location de voitures premium" },
+      {
+        property: "og:description",
+        content:
+          "Flotte 2026 automatique, équipements premium. La conduite, en mieux.",
+      },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <Navbar />
+      <main>
+        <Hero />
+        <Fleet />
+        <Advantages />
+        <Contact />
+      </main>
+      <Footer />
+      <WhatsAppFab />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
