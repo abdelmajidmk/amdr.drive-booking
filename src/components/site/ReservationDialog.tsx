@@ -29,7 +29,10 @@ const schema = z.object({
   startTime: z.string().regex(/^\d{2}:\d{2}$/, "Heure requise"),
   endTime: z.string().regex(/^\d{2}:\d{2}$/, "Heure requise"),
   notes: z.string().trim().max(400, "Message trop long").optional(),
-});
+}).refine(
+  (v) => new Date(`${v.endDate}T${v.endTime}`) > new Date(`${v.startDate}T${v.startTime}`),
+  { message: "La date/heure de fin doit être postérieure à la date/heure de début.", path: ["endDate"] }
+);
 
 type FormValues = z.infer<typeof schema>;
 
