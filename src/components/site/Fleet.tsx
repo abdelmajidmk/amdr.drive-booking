@@ -97,7 +97,7 @@ export function Fleet() {
   return (
     <section id="flotte" className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full bg-primary/10 blur-[140px]" />
+      <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full bg-primary/10 blur-[140px]" />
 
       <div className="relative container mx-auto px-6">
         <motion.div
@@ -131,7 +131,7 @@ export function Fleet() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.7, delay: idx * 0.1 }}
-              className="group relative rounded-3xl border border-border bg-card/40 backdrop-blur-xl overflow-hidden hover:border-primary/60 transition-all duration-500"
+              className="group relative rounded-3xl border border-border bg-card/60 md:backdrop-blur-xl overflow-hidden hover:border-primary/60 transition-all duration-500"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
