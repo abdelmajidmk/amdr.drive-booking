@@ -10,7 +10,7 @@ export function Contact() {
       <motion.div
         animate={{ opacity: [0.4, 0.7, 0.4] }}
         transition={{ duration: 5, repeat: Infinity }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-primary/20 blur-[140px]"
+        className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full bg-primary/20 blur-[140px]"
       />
 
       <div className="relative container mx-auto px-6">
