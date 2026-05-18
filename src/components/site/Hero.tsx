@@ -26,16 +26,16 @@ export function Hero() {
       {/* Grid overlay */}
       <div className="absolute inset-0 bg-grid opacity-30" />
 
-      {/* Glow orbs */}
+      {/* Glow orbs — desktop only (heavy blur kills mobile FPS) */}
       <motion.div
         animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -left-40 top-1/3 h-[500px] w-[500px] rounded-full bg-primary/30 blur-[120px]"
+        className="hidden md:block absolute -left-40 top-1/3 h-[500px] w-[500px] rounded-full bg-primary/30 blur-[120px]"
       />
       <motion.div
         animate={{ scale: [1.1, 1, 1.1], opacity: [0.3, 0.6, 0.3] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute right-0 bottom-1/4 h-[400px] w-[400px] rounded-full bg-accent-red/20 blur-[120px]"
+        className="hidden md:block absolute right-0 bottom-1/4 h-[400px] w-[400px] rounded-full bg-accent-red/20 blur-[120px]"
       />
 
       <div className="relative container mx-auto px-6 pt-32 pb-20">
