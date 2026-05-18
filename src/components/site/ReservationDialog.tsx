@@ -252,18 +252,29 @@ export function ReservationDialog({
                   />
                 </Field>
 
-                {/* Summary */}
-                <div className="sm:col-span-2 flex items-center justify-between gap-4 p-4 rounded-xl bg-primary/10 border border-primary/30">
-                  <div className="text-xs uppercase tracking-widest text-muted-foreground">
-                    Total estimé
+                {/* Summary — recalcul en temps réel */}
+                <div className="sm:col-span-2 p-5 rounded-xl bg-primary/10 border border-primary/30 space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Prix par jour</span>
+                    <span className="text-silver font-medium">{priceOf(values.car)} DH</span>
                   </div>
-                  <div className="font-display text-2xl text-gradient">
-                    {total > 0 ? `${total} DH` : "—"}
-                    {days > 0 && (
-                      <span className="text-sm text-muted-foreground font-sans ml-2">
-                        · {days} jour(s)
-                      </span>
-                    )}
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Nombre de jours</span>
+                    <span className="text-silver font-medium">{days > 0 ? `${days} jour(s)` : "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Calcul</span>
+                    <span className="text-silver font-medium">
+                      {days > 0 ? `${priceOf(values.car)} × ${days}` : "—"}
+                    </span>
+                  </div>
+                  <div className="border-t border-primary/30 pt-3 flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground">
+                      Total estimé
+                    </span>
+                    <span className="font-display text-2xl text-gradient">
+                      {total > 0 ? `${total} DH` : "—"}
+                    </span>
                   </div>
                 </div>
 
