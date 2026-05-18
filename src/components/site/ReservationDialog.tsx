@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { z } from "zod";
 import { motion, AnimatePresence } from "motion/react";
-import { X, MessageCircle, Calendar as CalIcon, User, Phone, MapPin, Car as CarIcon } from "lucide-react";
+import { X, MessageCircle, Calendar as CalIcon, User, Phone, MapPin, Car as CarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,6 +26,8 @@ const schema = z.object({
   pickup: z.string().trim().min(2, "Lieu requis").max(100),
   startDate: z.string().min(1, "Date requise"),
   endDate: z.string().min(1, "Date requise"),
+  startTime: z.string().regex(/^\d{2}:\d{2}$/, "Heure requise"),
+  endTime: z.string().regex(/^\d{2}:\d{2}$/, "Heure requise"),
   notes: z.string().trim().max(400, "Message trop long").optional(),
 });
 
@@ -57,6 +59,8 @@ export function ReservationDialog({
     pickup: "",
     startDate: "",
     endDate: "",
+    startTime: "10:00",
+    endTime: "10:00",
     notes: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
@@ -98,6 +102,8 @@ export function ReservationDialog({
       `📍 Lieu de prise en charge : ${v.pickup}\n` +
       `📅 Du : ${v.startDate}\n` +
       `📅 Au : ${v.endDate}\n` +
+      `🕒 Prise en charge : ${v.startTime}\n` +
+      `🕒 Restitution : ${v.endTime}\n` +
       `⏱ Durée : ${d} jour(s)\n` +
       `💰 Tarif estimé : ${t} DH (${priceOf(v.car)} DH/jour)\n` +
       (v.notes ? `\n📝 Notes : ${v.notes}\n` : "") +
@@ -212,6 +218,24 @@ export function ReservationDialog({
                         ? new Date(values.startDate)
                         : new Date(new Date().setHours(0, 0, 0, 0))
                     }
+                  />
+                </Field>
+
+                <Field label="Heure de prise en charge" icon={Clock} error={errors.startTime}>
+                  <input
+                    type="time"
+                    className={inputCls}
+                    value={values.startTime}
+                    onChange={(e) => set("startTime", e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Heure de restitution" icon={Clock} error={errors.endTime}>
+                  <input
+                    type="time"
+                    className={inputCls}
+                    value={values.endTime}
+                    onChange={(e) => set("endTime", e.target.value)}
                   />
                 </Field>
 
