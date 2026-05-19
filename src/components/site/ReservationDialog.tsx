@@ -473,6 +473,7 @@ function DateField({
   onChange: (v: string) => void;
   minDate?: Date;
 }) {
+  // existing date field
   const date = value ? new Date(value) : undefined;
   return (
     <Popover>
