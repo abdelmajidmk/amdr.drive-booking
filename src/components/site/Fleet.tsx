@@ -31,7 +31,7 @@ const cars: Car[] = [
     pricePerDay: 800,
     specs: [
       { icon: Settings2, label: "Boîte automatique" },
-      { icon: Fuel, label: "Essence" },
+      { icon: Fuel, label: "Diesel" },
       { icon: Users, label: "5 places" },
       { icon: Briefcase, label: "Coffre 445 L" },
       { icon: Snowflake, label: "Climatisation" },
@@ -53,7 +53,7 @@ const cars: Car[] = [
     pricePerDay: 400,
     specs: [
       { icon: Settings2, label: "Boîte automatique" },
-      { icon: Fuel, label: "Essence" },
+      { icon: Fuel, label: "Diesel" },
       { icon: Users, label: "5 places" },
       { icon: Briefcase, label: "Coffre 309 L" },
       { icon: Snowflake, label: "Climatisation" },
