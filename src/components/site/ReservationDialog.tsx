@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { z } from "zod";
 import { motion, AnimatePresence } from "motion/react";
-import { X, MessageCircle, Calendar as CalIcon, User, Phone, MapPin, Car as CarIcon, Clock, IdCard, FileText } from "lucide-react";
+import { X, MessageCircle, Calendar as CalIcon, User, Phone, MapPin, Car as CarIcon, Clock, IdCard, FileText, Upload, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 export const CARS = [
   { name: "Volkswagen T-Roc 2026", price: 800 },
@@ -92,6 +93,10 @@ export function ReservationDialog({
     notes: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
+  const [cinFile, setCinFile] = useState<File | null>(null);
+  const [permisFile, setPermisFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState<string | undefined>(undefined);
+  const [submitting, setSubmitting] = useState(false);
 
   // sync default car when opened
   if (open && defaultCar && values.car !== defaultCar && !errors.car) {
@@ -106,7 +111,7 @@ export function ReservationDialog({
     setErrors((e) => ({ ...e, [k]: undefined }));
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse(values);
     if (!parsed.success) {
@@ -118,9 +123,60 @@ export function ReservationDialog({
       setErrors(errs);
       return;
     }
+    if (!cinFile || !permisFile) {
+      setFileError("Veuillez joindre la photo du CIN et celle du permis.");
+      return;
+    }
+    const MAX = 8 * 1024 * 1024;
+    if (cinFile.size > MAX || permisFile.size > MAX) {
+      setFileError("Chaque fichier doit faire moins de 8 Mo.");
+      return;
+    }
+    setFileError(undefined);
     const v = parsed.data;
     const d = daysBetween(v.startDate, v.endDate);
     const t = d * priceOf(v.car);
+    setSubmitting(true);
+    let cinUrl = "";
+    let permisUrl = "";
+    try {
+      const stamp = Date.now();
+      const safe = v.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 24) || "client";
+      const cinPath = `${stamp}-${safe}/cin-${cinFile.name}`;
+      const permisPath = `${stamp}-${safe}/permis-${permisFile.name}`;
+      const [cinUp, permisUp] = await Promise.all([
+        supabase.storage.from("reservation-docs").upload(cinPath, cinFile, { upsert: false }),
+        supabase.storage.from("reservation-docs").upload(permisPath, permisFile, { upsert: false }),
+      ]);
+      if (cinUp.error) throw cinUp.error;
+      if (permisUp.error) throw permisUp.error;
+      cinUrl = supabase.storage.from("reservation-docs").getPublicUrl(cinPath).data.publicUrl;
+      permisUrl = supabase.storage.from("reservation-docs").getPublicUrl(permisPath).data.publicUrl;
+
+      await supabase.from("reservations").insert({
+        name: v.name,
+        phone: v.phone,
+        cin: v.cin,
+        permis: v.permis,
+        car: v.car,
+        pickup: v.pickup,
+        start_date: v.startDate,
+        end_date: v.endDate,
+        start_time: v.startTime,
+        end_time: v.endTime,
+        days: d,
+        total_dh: t,
+        notes: v.notes || null,
+        cin_url: cinUrl,
+        permis_url: permisUrl,
+      });
+    } catch (err) {
+      console.error(err);
+      setFileError("L'envoi des fichiers a échoué, réessayez.");
+      setSubmitting(false);
+      return;
+    }
+
     const msg =
       `Bonjour AM Drive 👋\n\n` +
       `Je souhaite réserver un véhicule :\n\n` +
@@ -136,10 +192,13 @@ export function ReservationDialog({
       `🕒 Restitution : ${v.endTime}\n` +
       `⏱ Durée : ${d} jour(s)\n` +
       `💰 Tarif estimé : ${t} DH (${priceOf(v.car)} DH/jour)\n` +
+      `\n🖼 Photo CIN : ${cinUrl}\n` +
+      `🖼 Photo Permis : ${permisUrl}\n` +
       (v.notes ? `\n📝 Notes : ${v.notes}\n` : "") +
       `\nMerci de me confirmer la disponibilité.`;
     const url = `https://wa.me/212704957685?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank", "noopener,noreferrer");
+    setSubmitting(false);
     onClose();
   };
 
@@ -226,6 +285,26 @@ export function ReservationDialog({
                     maxLength={30}
                   />
                 </Field>
+
+                <Field label="Photo du CIN" icon={Upload} className="sm:col-span-1">
+                  <FileInput
+                    file={cinFile}
+                    onChange={setCinFile}
+                    accept="image/*,application/pdf"
+                  />
+                </Field>
+
+                <Field label="Photo du Permis" icon={Upload} className="sm:col-span-1">
+                  <FileInput
+                    file={permisFile}
+                    onChange={setPermisFile}
+                    accept="image/*,application/pdf"
+                  />
+                </Field>
+
+                {fileError && (
+                  <div className="sm:col-span-2 text-xs text-destructive">{fileError}</div>
+                )}
 
                 <Field label="Véhicule" icon={CarIcon} error={errors.car} className="sm:col-span-2">
                   <select
@@ -328,10 +407,20 @@ export function ReservationDialog({
                 <div className="sm:col-span-2 flex flex-wrap gap-3 pt-1">
                   <button
                     type="submit"
-                    className="group inline-flex items-center gap-3 px-7 h-13 py-3 rounded-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-semibold shadow-[0_0_40px_oklch(0.62_0.22_255_/_0.5)] hover:shadow-[0_0_60px_oklch(0.62_0.22_255_/_0.8)] hover:scale-[1.02] transition"
+                    disabled={submitting}
+                    className="group inline-flex items-center gap-3 px-7 h-13 py-3 rounded-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-semibold shadow-[0_0_40px_oklch(0.62_0.22_255_/_0.5)] hover:shadow-[0_0_60px_oklch(0.62_0.22_255_/_0.8)] hover:scale-[1.02] transition disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    <MessageCircle className="h-4 w-4" />
-                    Envoyer sur WhatsApp
+                    {submitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Envoi en cours…
+                      </>
+                    ) : (
+                      <>
+                        <MessageCircle className="h-4 w-4" />
+                        Envoyer sur WhatsApp
+                      </>
+                    )}
                   </button>
                   <button
                     type="button"
