@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { z } from "zod";
 import { motion, AnimatePresence } from "motion/react";
-import { X, MessageCircle, Calendar as CalIcon, User, Phone, MapPin, Car as CarIcon, Clock } from "lucide-react";
+import { X, MessageCircle, Calendar as CalIcon, User, Phone, MapPin, Car as CarIcon, Clock, IdCard, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -22,6 +22,18 @@ const schema = z.object({
     .min(8, "Numéro invalide")
     .max(20, "Numéro invalide")
     .regex(/^[0-9+\s()-]+$/, "Numéro invalide"),
+  cin: z
+    .string()
+    .trim()
+    .min(4, "CIN invalide")
+    .max(20, "CIN invalide")
+    .regex(/^[A-Za-z0-9-]+$/, "CIN invalide"),
+  permis: z
+    .string()
+    .trim()
+    .min(4, "N° de permis invalide")
+    .max(30, "N° de permis invalide")
+    .regex(/^[A-Za-z0-9\/-]+$/, "N° de permis invalide"),
   car: z.string().min(1, "Choisissez un véhicule"),
   pickup: z.string().trim().min(2, "Lieu requis").max(100),
   startDate: z.string().min(1, "Date requise"),
@@ -69,6 +81,8 @@ export function ReservationDialog({
   const [values, setValues] = useState<FormValues>({
     name: "",
     phone: "",
+    cin: "",
+    permis: "",
     car: defaultCar ?? CARS[0].name,
     pickup: "",
     startDate: "",
@@ -112,6 +126,8 @@ export function ReservationDialog({
       `Je souhaite réserver un véhicule :\n\n` +
       `👤 Nom : ${v.name}\n` +
       `📞 Téléphone : ${v.phone}\n` +
+      `🪪 CIN : ${v.cin}\n` +
+      `📄 Permis : ${v.permis}\n` +
       `🚗 Véhicule : ${v.car}\n` +
       `📍 Lieu de prise en charge : ${v.pickup}\n` +
       `📅 Du : ${v.startDate}\n` +
@@ -188,6 +204,26 @@ export function ReservationDialog({
                     placeholder="06 12 34 56 78"
                     inputMode="tel"
                     maxLength={20}
+                  />
+                </Field>
+
+                <Field label="N° CIN" icon={IdCard} error={errors.cin}>
+                  <input
+                    className={inputCls}
+                    value={values.cin}
+                    onChange={(e) => set("cin", e.target.value.toUpperCase())}
+                    placeholder="AB123456"
+                    maxLength={20}
+                  />
+                </Field>
+
+                <Field label="N° Permis de conduire" icon={FileText} error={errors.permis}>
+                  <input
+                    className={inputCls}
+                    value={values.permis}
+                    onChange={(e) => set("permis", e.target.value.toUpperCase())}
+                    placeholder="123456/AB"
+                    maxLength={30}
                   />
                 </Field>
 
