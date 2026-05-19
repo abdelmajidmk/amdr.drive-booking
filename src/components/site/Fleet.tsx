@@ -133,7 +133,7 @@ export function Fleet() {
               transition={{ duration: 0.7, delay: idx * 0.1 }}
               className="group relative rounded-3xl border border-border bg-card/60 md:backdrop-blur-xl overflow-hidden hover:border-primary/60 transition-all duration-500"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent-red/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
               <div className="grid lg:grid-cols-12 gap-0">
                 {/* Image */}
@@ -149,7 +149,7 @@ export function Fleet() {
                   <div className="absolute top-5 left-5 px-3 py-1 rounded-md bg-gradient-to-r from-primary to-primary-glow text-primary-foreground text-sm font-bold shadow-lg">
                     {car.qty}
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent lg:bg-gradient-to-r" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent lg:bg-gradient-to-r" />
                 </div>
 
                 {/* Info */}
@@ -203,7 +203,7 @@ export function Fleet() {
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-border flex flex-wrap gap-3">
+                  <div className="relative z-10 mt-8 pt-6 border-t border-border flex flex-wrap gap-3">
                     <button
                       type="button"
                       onClick={() => open(car.name)}
