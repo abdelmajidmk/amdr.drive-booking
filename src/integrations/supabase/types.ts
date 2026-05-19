@@ -14,7 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      reservations: {
+        Row: {
+          car: string
+          cin: string
+          cin_url: string | null
+          created_at: string
+          days: number
+          end_date: string
+          end_time: string
+          id: string
+          name: string
+          notes: string | null
+          permis: string
+          permis_url: string | null
+          phone: string
+          pickup: string
+          start_date: string
+          start_time: string
+          status: string
+          total_dh: number
+        }
+        Insert: {
+          car: string
+          cin: string
+          cin_url?: string | null
+          created_at?: string
+          days: number
+          end_date: string
+          end_time: string
+          id?: string
+          name: string
+          notes?: string | null
+          permis: string
+          permis_url?: string | null
+          phone: string
+          pickup: string
+          start_date: string
+          start_time: string
+          status?: string
+          total_dh: number
+        }
+        Update: {
+          car?: string
+          cin?: string
+          cin_url?: string | null
+          created_at?: string
+          days?: number
+          end_date?: string
+          end_time?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          permis?: string
+          permis_url?: string | null
+          phone?: string
+          pickup?: string
+          start_date?: string
+          start_time?: string
+          status?: string
+          total_dh?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
