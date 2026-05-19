@@ -506,3 +506,32 @@ function DateField({
     </Popover>
   );
 }
+
+function FileInput({
+  file,
+  onChange,
+  accept,
+}: {
+  file: File | null;
+  onChange: (f: File | null) => void;
+  accept?: string;
+}) {
+  return (
+    <label
+      className={cn(
+        "flex items-center justify-between gap-3 w-full h-11 px-4 rounded-xl bg-background/60 border border-border cursor-pointer hover:border-primary/60 transition text-sm"
+      )}
+    >
+      <span className={cn("truncate", !file && "text-muted-foreground")}>
+        {file ? file.name : "Choisir un fichier (image ou PDF)"}
+      </span>
+      <Upload className="h-4 w-4 text-primary opacity-80 shrink-0" />
+      <input
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+      />
+    </label>
+  );
+}
