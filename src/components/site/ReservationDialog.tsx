@@ -136,7 +136,6 @@ export function ReservationDialog({
       setFileError("Chaque fichier doit faire moins de 8 Mo.");
       return;
     }
-    const whatsappWindow = window.open("about:blank", "_blank");
     setFileError(undefined);
     const v = parsed.data;
     const d = daysBetween(v.startDate, v.endDate);
@@ -178,7 +177,6 @@ export function ReservationDialog({
       });
     } catch (err) {
       console.error(err);
-      whatsappWindow?.close();
       setFileError("L'envoi des fichiers a échoué, réessayez.");
       setSubmitting(false);
       return;
@@ -206,10 +204,13 @@ export function ReservationDialog({
       (v.notes ? `\n📝 Notes : ${v.notes}\n` : "") +
       `\nMerci de me confirmer la disponibilité.`;
     const url = `https://wa.me/212704957685?text=${encodeURIComponent(msg)}`;
-    if (whatsappWindow) {
-      whatsappWindow.location.href = url;
-    } else {
+    // Use a synchronous anchor click — works reliably on desktop (no popup blocker
+    // issues since this runs in the submit handler call stack).
+    const newTab = window.open(url, "_blank", "noopener,noreferrer");
+    if (!newTab) {
+      // Popup blocked → navigate current tab as fallback.
       window.location.href = url;
+      return;
     }
     setSubmitting(false);
     onClose();
