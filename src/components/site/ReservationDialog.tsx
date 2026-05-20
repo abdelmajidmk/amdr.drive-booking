@@ -206,21 +206,12 @@ export function ReservationDialog({
     const url = `https://wa.me/212704957685?text=${encodeURIComponent(msg)}`;
     // Use a synchronous anchor click — works reliably on desktop (no popup blocker
     // issues since this runs in the submit handler call stack).
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    // Fallback: if the new tab was blocked, navigate the current tab.
-    setTimeout(() => {
-      try {
-        window.location.href = url;
-      } catch {
-        // ignore
-      }
-    }, 400);
+    const newTab = window.open(url, "_blank", "noopener,noreferrer");
+    if (!newTab) {
+      // Popup blocked → navigate current tab as fallback.
+      window.location.href = url;
+      return;
+    }
     setSubmitting(false);
     onClose();
   };
