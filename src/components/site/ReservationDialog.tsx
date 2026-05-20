@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
 export const CARS = [
-  { name: "Volkswagen T-Roc 2026", price: 800 },
-  { name: "Peugeot 208 2026", price: 400 },
-  { name: "Opel Corsa 2026", price: 400 },
+  { name: "Volkswagen T-Roc 2026", price: 800, fuel: "Diesel", model: "T-Roc" },
+  { name: "Peugeot 208 2026", price: 400, fuel: "Diesel", model: "208" },
+  { name: "Opel Corsa 2026", price: 400, fuel: "Essence", model: "Corsa" },
 ] as const;
 
 const schema = z.object({
@@ -62,6 +62,10 @@ type FormValues = z.infer<typeof schema>;
 
 function priceOf(name: string) {
   return CARS.find((c) => c.name === name)?.price ?? 0;
+}
+
+function carInfo(name: string) {
+  return CARS.find((c) => c.name === name);
 }
 
 function daysBetween(a: string, b: string) {
@@ -136,6 +140,7 @@ export function ReservationDialog({
     const v = parsed.data;
     const d = daysBetween(v.startDate, v.endDate);
     const t = d * priceOf(v.car);
+    const info = carInfo(v.car);
     setSubmitting(true);
     let cinUrl = "";
     let permisUrl = "";
@@ -185,6 +190,8 @@ export function ReservationDialog({
       `🪪 CIN : ${v.cin}\n` +
       `📄 Permis : ${v.permis}\n` +
       `🚗 Véhicule : ${v.car}\n` +
+      `🏷 Modèle : ${info?.model ?? v.car}\n` +
+      `⛽ Carburant : ${info?.fuel ?? "—"}\n` +
       `📍 Lieu de prise en charge : ${v.pickup}\n` +
       `📅 Du : ${v.startDate}\n` +
       `📅 Au : ${v.endDate}\n` +
@@ -197,7 +204,15 @@ export function ReservationDialog({
       (v.notes ? `\n📝 Notes : ${v.notes}\n` : "") +
       `\nMerci de me confirmer la disponibilité.`;
     const url = `https://wa.me/212704957685?text=${encodeURIComponent(msg)}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    // window.open après await est bloqué par le navigateur (popup blocker)
+    // → on utilise un lien temporaire pour conserver le geste utilisateur.
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     setSubmitting(false);
     onClose();
   };
