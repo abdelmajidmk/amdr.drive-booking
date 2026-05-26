@@ -51,12 +51,12 @@ export function Contact() {
                 <Phone className="h-5 w-5" /> Appeler
               </a>
               <a
-                href="https://www.instagram.com/amdr.ive"
+                href="https://www.instagram.com/am.elite_drive"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-3 px-8 h-14 rounded-full border border-border text-silver font-medium hover:border-primary hover:bg-primary/10 transition"
               >
-                <Instagram className="h-5 w-5" /> @amdr.ive
+                <Instagram className="h-5 w-5" /> @am.elite_drive
               </a>
             </div>
 

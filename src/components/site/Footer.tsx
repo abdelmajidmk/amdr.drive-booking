@@ -21,7 +21,7 @@ export function Footer() {
         </div>
         <div className="flex md:justify-end items-center gap-3">
           <a
-            href="https://www.instagram.com/amdr.ive"
+            href="https://www.instagram.com/am.elite_drive"
             target="_blank"
             rel="noreferrer"
             aria-label="Instagram"
