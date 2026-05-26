@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
-import logo from "@/assets/am-drive-logo.jpeg";
+import logo from "@/assets/am-elite-drive-logo.png";
 import { Instagram, Phone } from "lucide-react";
 
 const links = [
@@ -32,11 +32,11 @@ export function Navbar() {
         <a href="#top" className="flex items-center gap-3 group">
           <img
             src={logo}
-            alt="AM Drive — Location de voitures"
+            alt="AM Elite Drive — Location de voitures"
             className="h-12 w-12 rounded-lg object-cover ring-1 ring-primary/30 group-hover:ring-primary transition"
           />
           <div className="hidden sm:block leading-tight">
-            <div className="font-display text-lg text-silver">AM DRIVE</div>
+            <div className="font-display text-lg text-silver">AM ELITE DRIVE</div>
             <div className="text-[10px] tracking-[0.3em] text-muted-foreground">
               LOCATION DE VOITURES
             </div>
