@@ -29,7 +29,7 @@ export function Advantages() {
           className="max-w-2xl mb-16"
         >
           <div className="text-xs tracking-[0.3em] uppercase text-primary mb-4">
-            Pourquoi AM Drive
+            Pourquoi AM Elite Drive
           </div>
           <h2 className="font-display text-4xl sm:text-5xl font-black text-silver">
             VOTRE SATISFACTION,

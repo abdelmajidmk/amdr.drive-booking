@@ -11,13 +11,13 @@ import { ReservationProvider } from "@/components/site/ReservationProvider";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AM Drive — Location de voitures premium 2026 au Maroc" },
+      { title: "AM Elite Drive — Location de voitures premium 2026 au Maroc" },
       {
         name: "description",
         content:
-          "AM Drive : location de voitures 2026 automatiques. Volkswagen T-Roc, Peugeot 208, Opel Corsa. Réservation rapide WhatsApp · 0704 957 685.",
+          "AM Elite Drive : location de voitures 2026 automatiques. Volkswagen T-Roc, Peugeot 208, Opel Corsa. Réservation rapide WhatsApp · 0704 957 685.",
       },
-      { property: "og:title", content: "AM Drive — Location de voitures premium" },
+      { property: "og:title", content: "AM Elite Drive — Location de voitures premium" },
       {
         property: "og:description",
         content:

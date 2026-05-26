@@ -183,7 +183,7 @@ export function ReservationDialog({
     }
 
     const msg =
-      `Bonjour AM Drive 👋\n\n` +
+      `Bonjour AM Elite Drive 👋\n\n` +
       `Je souhaite réserver un véhicule :\n\n` +
       `👤 Nom : ${v.name}\n` +
       `📞 Téléphone : ${v.phone}\n` +
@@ -255,7 +255,7 @@ export function ReservationDialog({
               </h3>
               <p className="text-sm text-muted-foreground mt-2">
                 Remplissez le formulaire — votre demande sera envoyée directement sur
-                WhatsApp à AM Drive.
+                WhatsApp à AM Elite Drive.
               </p>
 
               <form onSubmit={submit} className="mt-7 grid sm:grid-cols-2 gap-5">

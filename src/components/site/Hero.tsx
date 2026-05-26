@@ -16,7 +16,7 @@ export function Hero() {
       >
         <img
           src={heroImg}
-          alt="Voiture de luxe la nuit — AM Drive"
+          alt="Voiture de luxe la nuit — AM Elite Drive"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />

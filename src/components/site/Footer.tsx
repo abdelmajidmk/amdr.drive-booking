@@ -1,4 +1,4 @@
-import logo from "@/assets/am-drive-logo.jpeg";
+import logo from "@/assets/am-elite-drive-logo.png";
 import { Instagram, Phone } from "lucide-react";
 
 export function Footer() {
@@ -6,9 +6,9 @@ export function Footer() {
     <footer className="border-t border-border bg-background/80 backdrop-blur">
       <div className="container mx-auto px-6 py-12 grid md:grid-cols-3 gap-10 items-start">
         <div className="flex items-center gap-3">
-          <img src={logo} alt="AM Drive" className="h-14 w-14 rounded-lg ring-1 ring-primary/30" />
+          <img src={logo} alt="AM Elite Drive" className="h-14 w-14 rounded-lg ring-1 ring-primary/30" />
           <div>
-            <div className="font-display text-xl text-silver">AM DRIVE</div>
+            <div className="font-display text-xl text-silver">AM ELITE DRIVE</div>
             <div className="text-[10px] tracking-[0.3em] text-muted-foreground">
               LOCATION DE VOITURES
             </div>
@@ -39,7 +39,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container mx-auto px-6 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-          <div>© {new Date().getFullYear()} AM Drive · Signé Amine Mouktir</div>
+          <div>© {new Date().getFullYear()} AM Elite Drive · Signé Amine Mouktir</div>
           <div className="tracking-[0.25em] uppercase">Votre satisfaction, notre priorité</div>
         </div>
       </div>
