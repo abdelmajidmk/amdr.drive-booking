@@ -1,5 +1,4 @@
 import { motion } from "motion/react";
-import p208 from "@/assets/p208.jpg";
 import corsa from "@/assets/corsa.jpg";
 import {
   Camera,
@@ -23,15 +22,6 @@ type Car = {
   features: string[];
 };
 
-const p208Features = [
-  'Écran tactile 10"',
-  "Peugeot i-Cockpit Digital",
-  "Apple CarPlay & Android Auto",
-  "Régulateur / limiteur de vitesse",
-  "Démarrage sans clé",
-  "Jantes alliage",
-];
-
 const corsaFeatures = [
   'Écran tactile 10"',
   "Apple CarPlay & Android Auto",
@@ -52,17 +42,8 @@ const baseSpecs = (transmission: "Automatique" | "Manuelle", fuel: string, coffr
 
 const automatiques: Car[] = [
   {
-    name: "Peugeot 208 2026 Automatique",
-    qty: "1x",
-    img: p208,
-    pricePerDay: 350,
-    transmission: "Automatique",
-    specs: baseSpecs("Automatique", "Diesel", "309 L"),
-    features: p208Features,
-  },
-  {
     name: "Opel Corsa 2026 Automatique",
-    qty: "1x",
+    qty: "2x",
     img: corsa,
     pricePerDay: 350,
     transmission: "Automatique",
@@ -73,17 +54,8 @@ const automatiques: Car[] = [
 
 const manuelles: Car[] = [
   {
-    name: "Peugeot 208 2026 Manuelle",
-    qty: "2x",
-    img: p208,
-    pricePerDay: 300,
-    transmission: "Manuelle",
-    specs: baseSpecs("Manuelle", "Diesel", "309 L"),
-    features: p208Features,
-  },
-  {
     name: "Opel Corsa 2026 Manuelle",
-    qty: "2x",
+    qty: "4x",
     img: corsa,
     pricePerDay: 300,
     transmission: "Manuelle",

@@ -10,9 +10,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
 export const CARS = [
-  { name: "Peugeot 208 2026 Automatique", price: 350, fuel: "Diesel", model: "Peugeot 208 Automatique" },
   { name: "Opel Corsa 2026 Automatique", price: 350, fuel: "Essence", model: "Opel Corsa Automatique" },
-  { name: "Peugeot 208 2026 Manuelle", price: 300, fuel: "Diesel", model: "Peugeot 208 Manuelle" },
   { name: "Opel Corsa 2026 Manuelle", price: 300, fuel: "Essence", model: "Opel Corsa Manuelle" },
 ] as const;
 
