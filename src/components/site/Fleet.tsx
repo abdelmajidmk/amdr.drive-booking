@@ -59,7 +59,7 @@ const manuelles: Car[] = [
     img: corsa,
     pricePerDay: 300,
     transmission: "Manuelle",
-    specs: baseSpecs("Manuelle", "Essence", "309 L"),
+    specs: baseSpecs("Manuelle", "Sans diesel", "309 L"),
     features: corsaFeatures,
   },
 ];
