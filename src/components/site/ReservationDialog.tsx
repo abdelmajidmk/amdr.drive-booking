@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
 export const CARS = [
-  { name: "Opel Corsa 2026 Automatique", price: 350, fuel: "Essence", model: "Opel Corsa Automatique" },
-  { name: "Opel Corsa 2026 Manuelle", price: 300, fuel: "Sans diesel", model: "Opel Corsa Manuelle" },
+  { name: "Opel Corsa 2026 Automatique", price: 350, fuel: "Diesel", model: "Opel Corsa Automatique" },
+  { name: "Opel Corsa 2026 Manuelle", price: 300, fuel: "Diesel", model: "Opel Corsa Manuelle" },
 ] as const;
 
 const schema = z.object({
