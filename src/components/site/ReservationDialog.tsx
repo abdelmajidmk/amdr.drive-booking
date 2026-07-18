@@ -154,8 +154,13 @@ export function ReservationDialog({
       ]);
       if (cinUp.error) throw cinUp.error;
       if (permisUp.error) throw permisUp.error;
-      cinUrl = supabase.storage.from("reservation-docs").getPublicUrl(cinPath).data.publicUrl;
-      permisUrl = supabase.storage.from("reservation-docs").getPublicUrl(permisPath).data.publicUrl;
+      const expiresIn = 60 * 60 * 24 * 30; // 30 days
+      const [cinSigned, permisSigned] = await Promise.all([
+        supabase.storage.from("reservation-docs").createSignedUrl(cinPath, expiresIn),
+        supabase.storage.from("reservation-docs").createSignedUrl(permisPath, expiresIn),
+      ]);
+      cinUrl = cinSigned.data?.signedUrl ?? cinPath;
+      permisUrl = permisSigned.data?.signedUrl ?? permisPath;
 
       await supabase.from("reservations").insert({
         name: v.name,
