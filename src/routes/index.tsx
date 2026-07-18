@@ -15,13 +15,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "AM Elite Drive : location de voitures 2026 automatiques. Volkswagen T-Roc, Peugeot 208, Opel Corsa. Réservation rapide WhatsApp · 0704 957 685.",
+          "AM Elite Drive : location de voitures Opel Corsa 2026 automatiques et manuelles. Réservation rapide WhatsApp · 0704 957 685.",
       },
       { property: "og:title", content: "AM Elite Drive — Location de voitures premium" },
       {
         property: "og:description",
         content:
-          "Flotte 2026 automatique, équipements premium. La conduite, en mieux.",
+          "Flotte Opel Corsa 2026 automatique et manuelle, équipements premium. La conduite, en mieux.",
       },
     ],
   }),
