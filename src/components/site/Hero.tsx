@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import heroImg from "@/assets/hero.jpg";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Instagram } from "lucide-react";
 import { useReservation } from "./ReservationProvider";
 
 export function Hero() {
