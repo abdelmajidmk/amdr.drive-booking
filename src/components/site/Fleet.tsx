@@ -47,7 +47,7 @@ const automatiques: Car[] = [
     img: corsa,
     pricePerDay: 350,
     transmission: "Automatique",
-    specs: baseSpecs("Automatique", "Diesel", "309 L"),
+    specs: baseSpecs("Automatique", "Essence", "309 L"),
     features: corsaFeatures,
   },
 ];
