@@ -226,9 +226,6 @@ function CarCard({ car, idx, onReserve }: { car: Car; idx: number; onReserve: (n
             </div>
           </div>
 
-          <div className="relative z-10 mt-8 pt-6 border-t border-border flex flex-wrap gap-3">
-          </div>
-
           <div className="mt-8 pt-6 border-t border-border">
             <div className="flex items-center justify-between mb-4">
               <div className="text-xs uppercase tracking-[0.25em] text-primary">
