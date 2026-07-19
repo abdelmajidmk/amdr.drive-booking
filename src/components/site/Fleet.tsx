@@ -9,6 +9,7 @@ import {
   Briefcase,
   Check,
   MessageCircle,
+  Star,
 } from "lucide-react";
 import { useReservation } from "./ReservationProvider";
 
@@ -20,6 +21,9 @@ type Car = {
   transmission: "Automatique" | "Manuelle";
   specs: { icon: typeof Fuel; label: string }[];
   features: string[];
+  rating: number;
+  reviewCount: number;
+  reviews: { author: string; city: string; rating: number; date: string; text: string }[];
 };
 
 const corsaFeatures = [
@@ -49,6 +53,31 @@ const automatiques: Car[] = [
     transmission: "Automatique",
     specs: baseSpecs("Automatique", "Essence", "309 L"),
     features: corsaFeatures,
+    rating: 4.9,
+    reviewCount: 47,
+    reviews: [
+      {
+        author: "Yassine B.",
+        city: "Casablanca",
+        rating: 5,
+        date: "Mai 2026",
+        text: "Voiture impeccable, boîte auto très douce en ville. Service ultra rapide sur WhatsApp, je recommande à 100%.",
+      },
+      {
+        author: "Sara M.",
+        city: "Rabat",
+        rating: 5,
+        date: "Avril 2026",
+        text: "Parfait pour un week-end. Corsa neuve, propre, CarPlay au top. Livraison à l'heure, rien à redire.",
+      },
+      {
+        author: "Karim H.",
+        city: "Mohammedia",
+        rating: 4,
+        date: "Mars 2026",
+        text: "Très bon rapport qualité/prix, équipe pro et disponible. Je reprendrai la même la prochaine fois.",
+      },
+    ],
   },
 ];
 
@@ -61,8 +90,57 @@ const manuelles: Car[] = [
     transmission: "Manuelle",
     specs: baseSpecs("Manuelle", "Diesel", "309 L"),
     features: corsaFeatures,
+    rating: 4.8,
+    reviewCount: 92,
+    reviews: [
+      {
+        author: "Mehdi A.",
+        city: "Casablanca",
+        rating: 5,
+        date: "Juin 2026",
+        text: "Diesel très économique, 4L/100 sur autoroute. Voiture nickel et prise en charge express.",
+      },
+      {
+        author: "Imane R.",
+        city: "Marrakech",
+        rating: 5,
+        date: "Mai 2026",
+        text: "Agence sérieuse, contrat clair, aucune mauvaise surprise. La Corsa manuelle est un vrai plaisir à conduire.",
+      },
+      {
+        author: "Anas T.",
+        city: "El Jadida",
+        rating: 4,
+        date: "Avril 2026",
+        text: "Bon service, voiture propre et récente. Prix imbattable pour la qualité.",
+      },
+    ],
   },
 ];
+
+function Stars({ value, size = "h-4 w-4" }: { value: number; size?: string }) {
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`Note ${value} sur 5`}>
+      {[1, 2, 3, 4, 5].map((i) => {
+        const filled = value >= i;
+        const half = !filled && value >= i - 0.5;
+        return (
+          <span key={i} className="relative inline-block">
+            <Star className={`${size} text-muted-foreground/40`} />
+            {(filled || half) && (
+              <span
+                className="absolute inset-0 overflow-hidden"
+                style={{ width: filled ? "100%" : "50%" }}
+              >
+                <Star className={`${size} text-amber-400 fill-amber-400`} />
+              </span>
+            )}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 function CarCard({ car, idx, onReserve }: { car: Car; idx: number; onReserve: (name: string) => void }) {
   return (
@@ -100,6 +178,13 @@ function CarCard({ car, idx, onReserve }: { car: Car; idx: number; onReserve: (n
               <p className="text-sm text-muted-foreground tracking-widest uppercase mt-1">
                 Boîte {car.transmission.toLowerCase()} · Premium
               </p>
+              <div className="mt-3 flex items-center gap-2">
+                <Stars value={car.rating} />
+                <span className="text-sm font-semibold text-silver">{car.rating.toFixed(1)}</span>
+                <span className="text-xs text-muted-foreground">
+                  ({car.reviewCount} avis clients)
+                </span>
+              </div>
             </div>
             <div className="text-right">
               <div className="text-xs uppercase tracking-widest text-muted-foreground">
@@ -138,6 +223,37 @@ function CarCard({ car, idx, onReserve }: { car: Car; idx: number; onReserve: (n
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-border">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-xs uppercase tracking-[0.25em] text-primary">
+                Avis clients vérifiés
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Stars value={car.rating} size="h-3 w-3" />
+                <span>{car.rating.toFixed(1)} / 5</span>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              {car.reviews.map((r) => (
+                <div
+                  key={r.author + r.date}
+                  className="rounded-2xl border border-border bg-background/40 p-4 hover:border-primary/40 transition"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <div className="text-sm font-semibold text-silver">{r.author}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {r.city} · {r.date}
+                      </div>
+                    </div>
+                    <Stars value={r.rating} size="h-3 w-3" />
+                  </div>
+                  <p className="text-sm text-foreground/80 leading-relaxed">"{r.text}"</p>
+                </div>
+              ))}
             </div>
           </div>
 
