@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import heroImg from "@/assets/hero.jpg";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Instagram } from "lucide-react";
 import { useReservation } from "./ReservationProvider";
 
 export function Hero() {
@@ -96,6 +96,15 @@ export function Hero() {
           >
             Réserver maintenant
           </button>
+          <a
+            href="https://www.instagram.com/am.elite_drive"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-3 px-8 h-14 rounded-full border border-pink-500/40 bg-gradient-to-r from-pink-600/20 via-purple-600/20 to-orange-500/20 text-silver font-medium hover:scale-105 hover:shadow-[0_0_40px_oklch(0.65_0.22_340_/_0.5)] transition-all"
+          >
+            <Instagram className="h-5 w-5 text-pink-400" />
+            @am.elite_drive
+          </a>
         </motion.div>
 
         {/* Stats */}
