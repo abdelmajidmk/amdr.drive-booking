@@ -10,8 +10,11 @@ import {
   Check,
   MessageCircle,
   Star,
+  ShieldCheck,
 } from "lucide-react";
 import { useReservation } from "./ReservationProvider";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 type Car = {
   name: string;
@@ -21,9 +24,6 @@ type Car = {
   transmission: "Automatique" | "Manuelle";
   specs: { icon: typeof Fuel; label: string }[];
   features: string[];
-  rating: number;
-  reviewCount: number;
-  reviews: { author: string; city: string; rating: number; date: string; text: string }[];
 };
 
 const corsaFeatures = [
@@ -53,31 +53,6 @@ const automatiques: Car[] = [
     transmission: "Automatique",
     specs: baseSpecs("Automatique", "Essence", "309 L"),
     features: corsaFeatures,
-    rating: 4.9,
-    reviewCount: 47,
-    reviews: [
-      {
-        author: "Yassine B.",
-        city: "Casablanca",
-        rating: 5,
-        date: "Mai 2026",
-        text: "Voiture impeccable, boîte auto très douce en ville. Service ultra rapide sur WhatsApp, je recommande à 100%.",
-      },
-      {
-        author: "Sara M.",
-        city: "Rabat",
-        rating: 5,
-        date: "Avril 2026",
-        text: "Parfait pour un week-end. Corsa neuve, propre, CarPlay au top. Livraison à l'heure, rien à redire.",
-      },
-      {
-        author: "Karim H.",
-        city: "Mohammedia",
-        rating: 4,
-        date: "Mars 2026",
-        text: "Très bon rapport qualité/prix, équipe pro et disponible. Je reprendrai la même la prochaine fois.",
-      },
-    ],
   },
 ];
 
@@ -90,33 +65,18 @@ const manuelles: Car[] = [
     transmission: "Manuelle",
     specs: baseSpecs("Manuelle", "Diesel", "309 L"),
     features: corsaFeatures,
-    rating: 4.8,
-    reviewCount: 92,
-    reviews: [
-      {
-        author: "Mehdi A.",
-        city: "Casablanca",
-        rating: 5,
-        date: "Juin 2026",
-        text: "Diesel très économique, 4L/100 sur autoroute. Voiture nickel et prise en charge express.",
-      },
-      {
-        author: "Imane R.",
-        city: "Marrakech",
-        rating: 5,
-        date: "Mai 2026",
-        text: "Agence sérieuse, contrat clair, aucune mauvaise surprise. La Corsa manuelle est un vrai plaisir à conduire.",
-      },
-      {
-        author: "Anas T.",
-        city: "El Jadida",
-        rating: 4,
-        date: "Avril 2026",
-        text: "Bon service, voiture propre et récente. Prix imbattable pour la qualité.",
-      },
-    ],
   },
 ];
+
+type DbReview = {
+  id: string;
+  car: string;
+  author_name: string;
+  city: string | null;
+  rating: number;
+  comment: string;
+  created_at: string;
+};
 
 function Stars({ value, size = "h-4 w-4" }: { value: number; size?: string }) {
   return (
@@ -142,7 +102,22 @@ function Stars({ value, size = "h-4 w-4" }: { value: number; size?: string }) {
   );
 }
 
-function CarCard({ car, idx, onReserve }: { car: Car; idx: number; onReserve: (name: string) => void }) {
+function CarCard({
+  car,
+  idx,
+  onReserve,
+  reviews,
+}: {
+  car: Car;
+  idx: number;
+  onReserve: (name: string) => void;
+  reviews: DbReview[];
+}) {
+  const avg =
+    reviews.length > 0
+      ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
+      : null;
+  const shown = reviews.slice(0, 3);
   return (
     <motion.article
       initial={{ opacity: 0, y: 50 }}
@@ -178,13 +153,15 @@ function CarCard({ car, idx, onReserve }: { car: Car; idx: number; onReserve: (n
               <p className="text-sm text-muted-foreground tracking-widest uppercase mt-1">
                 Boîte {car.transmission.toLowerCase()} · Premium
               </p>
-              <div className="mt-3 flex items-center gap-2">
-                <Stars value={car.rating} />
-                <span className="text-sm font-semibold text-silver">{car.rating.toFixed(1)}</span>
-                <span className="text-xs text-muted-foreground">
-                  ({car.reviewCount} avis clients)
-                </span>
-              </div>
+              {avg !== null && (
+                <div className="mt-3 flex items-center gap-2">
+                  <Stars value={avg} />
+                  <span className="text-sm font-semibold text-silver">{avg.toFixed(1)}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({reviews.length} avis vérifié{reviews.length > 1 ? "s" : ""})
+                  </span>
+                </div>
+              )}
             </div>
             <div className="text-right">
               <div className="text-xs uppercase tracking-widest text-muted-foreground">
@@ -228,33 +205,54 @@ function CarCard({ car, idx, onReserve }: { car: Car; idx: number; onReserve: (n
 
           <div className="mt-8 pt-6 border-t border-border">
             <div className="flex items-center justify-between mb-4">
-              <div className="text-xs uppercase tracking-[0.25em] text-primary">
-                Avis clients vérifiés
+              <div className="text-xs uppercase tracking-[0.25em] text-primary inline-flex items-center gap-2">
+                <ShieldCheck className="h-3.5 w-3.5" /> Avis clients vérifiés
               </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Stars value={car.rating} size="h-3 w-3" />
-                <span>{car.rating.toFixed(1)} / 5</span>
-              </div>
-            </div>
-            <div className="grid md:grid-cols-3 gap-4">
-              {car.reviews.map((r) => (
-                <div
-                  key={r.author + r.date}
-                  className="rounded-2xl border border-border bg-background/40 p-4 hover:border-primary/40 transition"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <div className="text-sm font-semibold text-silver">{r.author}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {r.city} · {r.date}
-                      </div>
-                    </div>
-                    <Stars value={r.rating} size="h-3 w-3" />
-                  </div>
-                  <p className="text-sm text-foreground/80 leading-relaxed">"{r.text}"</p>
+              {avg !== null && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Stars value={avg} size="h-3 w-3" />
+                  <span>{avg.toFixed(1)} / 5</span>
                 </div>
-              ))}
+              )}
             </div>
+            {shown.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border bg-background/30 p-5 text-sm text-muted-foreground">
+                Aucun avis pour l'instant. Soyez le premier à laisser votre témoignage
+                après votre location — un lien de dépôt d'avis vous sera envoyé.
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-4">
+                {shown.map((r) => (
+                  <div
+                    key={r.id}
+                    className="rounded-2xl border border-border bg-background/40 p-4 hover:border-primary/40 transition"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <div className="text-sm font-semibold text-silver flex items-center gap-1.5">
+                          {r.author_name}
+                          <ShieldCheck
+                            className="h-3 w-3 text-primary"
+                            aria-label="Vérifié"
+                          />
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {r.city ? `${r.city} · ` : ""}
+                          {new Date(r.created_at).toLocaleDateString("fr-FR", {
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </div>
+                      </div>
+                      <Stars value={r.rating} size="h-3 w-3" />
+                    </div>
+                    <p className="text-sm text-foreground/80 leading-relaxed">
+                      "{r.comment}"
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="relative z-10 mt-8 pt-6 border-t border-border flex flex-wrap gap-3">
@@ -299,6 +297,33 @@ function SectionHeader({ title }: { title: string }) {
 
 export function Fleet() {
   const { open } = useReservation();
+  const [reviews, setReviews] = useState<DbReview[]>([]);
+
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      const { data } = await supabase
+        .from("reviews")
+        .select("id, car, author_name, city, rating, comment, created_at")
+        .eq("approved", true)
+        .order("created_at", { ascending: false })
+        .limit(60);
+      if (!cancel && data) setReviews(data as DbReview[]);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, []);
+
+  const byCar = useMemo(() => {
+    const m = new Map<string, DbReview[]>();
+    for (const r of reviews) {
+      const list = m.get(r.car) ?? [];
+      list.push(r);
+      m.set(r.car, list);
+    }
+    return m;
+  }, [reviews]);
 
   return (
     <section id="flotte" className="relative py-32 overflow-hidden">
@@ -333,7 +358,13 @@ export function Fleet() {
           <SectionHeader title="BOÎTE AUTOMATIQUE" />
           <div className="space-y-10">
             {automatiques.map((car, idx) => (
-              <CarCard key={car.name} car={car} idx={idx} onReserve={open} />
+              <CarCard
+                key={car.name}
+                car={car}
+                idx={idx}
+                onReserve={open}
+                reviews={byCar.get(car.name) ?? []}
+              />
             ))}
           </div>
         </div>
@@ -342,7 +373,13 @@ export function Fleet() {
           <SectionHeader title="BOÎTE MANUELLE" />
           <div className="space-y-10">
             {manuelles.map((car, idx) => (
-              <CarCard key={car.name} car={car} idx={idx} onReserve={open} />
+              <CarCard
+                key={car.name}
+                car={car}
+                idx={idx}
+                onReserve={open}
+                reviews={byCar.get(car.name) ?? []}
+              />
             ))}
           </div>
         </div>
