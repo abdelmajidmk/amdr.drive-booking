@@ -30,6 +30,7 @@ export type Database = {
           permis_url: string | null
           phone: string
           pickup: string
+          review_token: string
           start_date: string
           start_time: string
           status: string
@@ -50,6 +51,7 @@ export type Database = {
           permis_url?: string | null
           phone: string
           pickup: string
+          review_token?: string
           start_date: string
           start_time: string
           status?: string
@@ -70,12 +72,57 @@ export type Database = {
           permis_url?: string | null
           phone?: string
           pickup?: string
+          review_token?: string
           start_date?: string
           start_time?: string
           status?: string
           total_dh?: number
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          approved: boolean
+          author_name: string
+          car: string
+          city: string | null
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          reservation_id: string
+        }
+        Insert: {
+          approved?: boolean
+          author_name: string
+          car: string
+          city?: string | null
+          comment: string
+          created_at?: string
+          id?: string
+          rating: number
+          reservation_id: string
+        }
+        Update: {
+          approved?: boolean
+          author_name?: string
+          car?: string
+          city?: string | null
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          reservation_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: true
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -103,12 +150,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_reservation_for_review: {
+        Args: { _token: string }
+        Returns: {
+          already_reviewed: boolean
+          can_review: boolean
+          car: string
+          end_date: string
+          name: string
+          reservation_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      submit_review: {
+        Args: {
+          _author_name: string
+          _city: string
+          _comment: string
+          _rating: number
+          _token: string
+        }
+        Returns: string
       }
     }
     Enums: {
