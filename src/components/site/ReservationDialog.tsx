@@ -143,6 +143,10 @@ export function ReservationDialog({
     setSubmitting(true);
     let cinUrl = "";
     let permisUrl = "";
+    const reviewToken =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : "";
     try {
       const stamp = Date.now();
       const safe = v.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 24) || "client";
@@ -162,7 +166,7 @@ export function ReservationDialog({
       cinUrl = cinSigned.data?.signedUrl ?? cinPath;
       permisUrl = permisSigned.data?.signedUrl ?? permisPath;
 
-      await supabase.from("reservations").insert({
+      const { error: insErr } = await supabase.from("reservations").insert({
         name: v.name,
         phone: v.phone,
         cin: v.cin,
@@ -178,13 +182,19 @@ export function ReservationDialog({
         notes: v.notes || null,
         cin_url: cinUrl,
         permis_url: permisUrl,
+        ...(reviewToken ? { review_token: reviewToken } : {}),
       });
+      if (insErr) throw insErr;
     } catch (err) {
       console.error(err);
       setFileError("L'envoi des fichiers a échoué, réessayez.");
       setSubmitting(false);
       return;
     }
+
+    const reviewLink = reviewToken
+      ? `${window.location.origin}/avis/${reviewToken}`
+      : "";
 
     const msg =
       `Bonjour AM Elite Drive 👋\n\n` +
@@ -205,6 +215,7 @@ export function ReservationDialog({
       `💰 Tarif estimé : ${t} DH (${priceOf(v.car)} DH/jour)\n` +
       `\n🖼 Photo CIN : ${cinUrl}\n` +
       `🖼 Photo Permis : ${permisUrl}\n` +
+      (reviewLink ? `\n⭐ Lien pour laisser un avis (après la fin de la location) : ${reviewLink}\n` : "") +
       (v.notes ? `\n📝 Notes : ${v.notes}\n` : "") +
       `\nMerci de me confirmer la disponibilité.`;
     const url = `https://wa.me/212704957685?text=${encodeURIComponent(msg)}`;
