@@ -143,7 +143,10 @@ export function ReservationDialog({
     setSubmitting(true);
     let cinUrl = "";
     let permisUrl = "";
-    let reviewToken = "";
+    const reviewToken =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : "";
     try {
       const stamp = Date.now();
       const safe = v.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 24) || "client";
@@ -163,7 +166,7 @@ export function ReservationDialog({
       cinUrl = cinSigned.data?.signedUrl ?? cinPath;
       permisUrl = permisSigned.data?.signedUrl ?? permisPath;
 
-      const { data: inserted, error: insErr } = await supabase.from("reservations").insert({
+      const { error: insErr } = await supabase.from("reservations").insert({
         name: v.name,
         phone: v.phone,
         cin: v.cin,
@@ -179,9 +182,9 @@ export function ReservationDialog({
         notes: v.notes || null,
         cin_url: cinUrl,
         permis_url: permisUrl,
-      }).select("review_token").single();
+        ...(reviewToken ? { review_token: reviewToken } : {}),
+      });
       if (insErr) throw insErr;
-      reviewToken = (inserted as { review_token: string } | null)?.review_token ?? "";
     } catch (err) {
       console.error(err);
       setFileError("L'envoi des fichiers a échoué, réessayez.");
