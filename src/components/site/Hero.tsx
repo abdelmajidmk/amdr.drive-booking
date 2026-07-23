@@ -98,15 +98,19 @@ export function Hero() {
             Réserver maintenant
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition" />
           </button>
-          <a
+          <motion.a
             href="https://www.instagram.com/am.elite_drive"
             target="_blank"
             rel="noreferrer"
             aria-label="Instagram"
-            className="h-14 w-14 grid place-items-center rounded-full border border-border hover:border-primary hover:bg-primary/10 transition"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            animate={{ boxShadow: ["0 0 30px oklch(0.62 0.22 255 / 0.4)", "0 0 60px oklch(0.62 0.22 255 / 0.7)", "0 0 30px oklch(0.62 0.22 255 / 0.4)"] }}
+            transition={{ boxShadow: { duration: 1.8, repeat: Infinity, ease: "easeInOut" }, scale: { duration: 0.2 } }}
+            className="h-14 w-14 grid place-items-center rounded-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground shadow-[0_0_40px_oklch(0.62_0.22_255_/_0.5)] hover:shadow-[0_0_70px_oklch(0.62_0.22_255_/_0.8)] transition"
           >
             <Instagram className="h-5 w-5" />
-          </a>
+          </motion.a>
         </motion.div>
 
         {/* Stats */}
