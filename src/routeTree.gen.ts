@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AvisTokenRouteImport } from './routes/avis.$token'
+import { Route as ApiPublicReviewsRouteImport } from './routes/api/public/reviews'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const AvisTokenRoute = AvisTokenRouteImport.update({
   path: '/avis/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicReviewsRoute = ApiPublicReviewsRouteImport.update({
+  id: '/api/public/reviews',
+  path: '/api/public/reviews',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/avis/$token': typeof AvisTokenRoute
+  '/api/public/reviews': typeof ApiPublicReviewsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/avis/$token': typeof AvisTokenRoute
+  '/api/public/reviews': typeof ApiPublicReviewsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/avis/$token': typeof AvisTokenRoute
+  '/api/public/reviews': typeof ApiPublicReviewsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/avis/$token'
+  fullPaths: '/' | '/avis/$token' | '/api/public/reviews'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/avis/$token'
-  id: '__root__' | '/' | '/avis/$token'
+  to: '/' | '/avis/$token' | '/api/public/reviews'
+  id: '__root__' | '/' | '/avis/$token' | '/api/public/reviews'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AvisTokenRoute: typeof AvisTokenRoute
+  ApiPublicReviewsRoute: typeof ApiPublicReviewsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AvisTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/reviews': {
+      id: '/api/public/reviews'
+      path: '/api/public/reviews'
+      fullPath: '/api/public/reviews'
+      preLoaderRoute: typeof ApiPublicReviewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AvisTokenRoute: AvisTokenRoute,
+  ApiPublicReviewsRoute: ApiPublicReviewsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
