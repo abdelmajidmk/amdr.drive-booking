@@ -8,6 +8,44 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { jsPDF } from "jspdf";
+
+async function imageToPdfBlob(file: File): Promise<Blob> {
+  // If already a PDF, return as-is
+  if (file.type === "application/pdf") {
+    return file;
+  }
+  const dataUrl: string = await new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result as string);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+  const img: HTMLImageElement = await new Promise((resolve, reject) => {
+    const i = new Image();
+    i.onload = () => resolve(i);
+    i.onerror = reject;
+    i.src = dataUrl;
+  });
+  const pdf = new jsPDF({
+    orientation: img.width > img.height ? "landscape" : "portrait",
+    unit: "pt",
+    format: "a4",
+  });
+  const pageW = pdf.internal.pageSize.getWidth();
+  const pageH = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  const maxW = pageW - margin * 2;
+  const maxH = pageH - margin * 2;
+  const ratio = Math.min(maxW / img.width, maxH / img.height);
+  const w = img.width * ratio;
+  const h = img.height * ratio;
+  const x = (pageW - w) / 2;
+  const y = (pageH - h) / 2;
+  const fmt = file.type === "image/png" ? "PNG" : "JPEG";
+  pdf.addImage(dataUrl, fmt, x, y, w, h);
+  return pdf.output("blob");
+}
 
 export const CARS = [
   { name: "Opel Corsa 2026 Automatique", price: 350, fuel: "Essence", model: "Opel Corsa Automatique" },
@@ -150,11 +188,15 @@ export function ReservationDialog({
     try {
       const stamp = Date.now();
       const safe = v.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 24) || "client";
-      const cinPath = `${stamp}-${safe}/cin-${cinFile.name}`;
-      const permisPath = `${stamp}-${safe}/permis-${permisFile.name}`;
+      const [cinPdf, permisPdf] = await Promise.all([
+        imageToPdfBlob(cinFile),
+        imageToPdfBlob(permisFile),
+      ]);
+      const cinPath = `${stamp}-${safe}/cin.pdf`;
+      const permisPath = `${stamp}-${safe}/permis.pdf`;
       const [cinUp, permisUp] = await Promise.all([
-        supabase.storage.from("reservation-docs").upload(cinPath, cinFile, { upsert: false }),
-        supabase.storage.from("reservation-docs").upload(permisPath, permisFile, { upsert: false }),
+        supabase.storage.from("reservation-docs").upload(cinPath, cinPdf, { upsert: false, contentType: "application/pdf" }),
+        supabase.storage.from("reservation-docs").upload(permisPath, permisPdf, { upsert: false, contentType: "application/pdf" }),
       ]);
       if (cinUp.error) throw cinUp.error;
       if (permisUp.error) throw permisUp.error;
