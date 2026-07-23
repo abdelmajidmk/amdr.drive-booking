@@ -2,7 +2,6 @@ import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Star, Loader2, CheckCircle2, ArrowLeft, ShieldCheck } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/avis/$token")({
   component: ReviewPage,
@@ -54,13 +53,16 @@ function ReviewPage() {
     let cancel = false;
     (async () => {
       setLoading(true);
-      const { data, error } = await supabase.rpc("get_reservation_for_review", {
-        _token: token,
+      const res = await fetch("/api/public/reviews", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "get", token }),
       });
+      const payload = await res.json().catch(() => ({}));
       if (cancel) return;
-      if (error) setError(error.message);
+      if (!res.ok || payload.error) setError(payload.error || "Erreur");
       else {
-        const row = Array.isArray(data) ? data[0] : data;
+        const row = payload.data;
         if (!row) setError("Lien invalide ou expiré.");
         else {
           setInfo(row as Info);
@@ -81,15 +83,21 @@ function ReviewPage() {
     if (author.trim().length < 2) return setError("Indiquez votre prénom / nom.");
     setSubmitting(true);
     setError(null);
-    const { error } = await supabase.rpc("submit_review", {
-      _token: token,
-      _rating: rating,
-      _comment: comment.trim(),
-      _author_name: author.trim(),
-      _city: city.trim(),
+    const res = await fetch("/api/public/reviews", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        action: "submit",
+        token,
+        rating,
+        comment: comment.trim(),
+        author_name: author.trim(),
+        city: city.trim(),
+      }),
     });
+    const payload = await res.json().catch(() => ({}));
     setSubmitting(false);
-    if (error) return setError(error.message);
+    if (!res.ok || payload.error) return setError(payload.error || "Erreur");
     setDone(true);
   };
 
