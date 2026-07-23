@@ -100,10 +100,10 @@ export function Hero() {
             href="https://www.instagram.com/am.elite_drive"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-3 px-8 h-14 rounded-full border border-pink-500/40 bg-gradient-to-r from-pink-600/20 via-purple-600/20 to-orange-500/20 text-silver font-medium hover:scale-105 hover:shadow-[0_0_40px_oklch(0.65_0.22_340_/_0.5)] transition-all"
+            aria-label="Instagram"
+            className="h-14 w-14 grid place-items-center rounded-full border border-border hover:border-primary hover:bg-primary/10 transition"
           >
-            <Instagram className="h-5 w-5 text-pink-400" />
-            @am.elite_drive
+            <Instagram className="h-5 w-5" />
           </a>
         </motion.div>
 
