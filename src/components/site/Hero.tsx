@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import heroImg from "@/assets/hero.jpg";
-import { ArrowRight, Sparkles, Instagram } from "lucide-react";
+import { ArrowRight, Sparkles, Instagram, CalendarCheck } from "lucide-react";
 import { useReservation } from "./ReservationProvider";
 
 export function Hero() {
@@ -92,9 +92,11 @@ export function Hero() {
           <button
             type="button"
             onClick={() => open()}
-            className="inline-flex items-center gap-3 px-8 h-14 rounded-full border border-border bg-card/40 backdrop-blur-md text-silver font-medium hover:border-primary hover:bg-primary/10 transition-all"
+            className="group inline-flex items-center gap-3 px-8 h-14 rounded-full bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-semibold shadow-[0_0_40px_oklch(0.62_0.22_255_/_0.5)] hover:shadow-[0_0_60px_oklch(0.62_0.22_255_/_0.8)] hover:scale-105 transition"
           >
+            <CalendarCheck className="h-5 w-5" />
             Réserver maintenant
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition" />
           </button>
           <a
             href="https://www.instagram.com/am.elite_drive"
