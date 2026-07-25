@@ -200,13 +200,9 @@ export function ReservationDialog({
       ]);
       if (cinUp.error) throw cinUp.error;
       if (permisUp.error) throw permisUp.error;
-      const expiresIn = 60 * 60 * 24 * 30; // 30 days
-      const [cinSigned, permisSigned] = await Promise.all([
-        supabase.storage.from("reservation-docs").createSignedUrl(cinPath, expiresIn),
-        supabase.storage.from("reservation-docs").createSignedUrl(permisPath, expiresIn),
-      ]);
-      cinUrl = cinSigned.data?.signedUrl ?? cinPath;
-      permisUrl = permisSigned.data?.signedUrl ?? permisPath;
+      // Store the storage path; a public endpoint will mint fresh signed URLs on demand
+      cinUrl = cinPath;
+      permisUrl = permisPath;
 
       const { error: insErr } = await supabase.from("reservations").insert({
         name: v.name,
@@ -237,6 +233,13 @@ export function ReservationDialog({
     const reviewLink = reviewToken
       ? `${window.location.origin}/avis/${reviewToken}`
       : "";
+    const origin = window.location.origin;
+    const cinLink = reviewToken
+      ? `${origin}/api/public/doc?t=${reviewToken}&k=cin`
+      : cinUrl;
+    const permisLink = reviewToken
+      ? `${origin}/api/public/doc?t=${reviewToken}&k=permis`
+      : permisUrl;
 
     const msg =
       `Bonjour AM Elite Drive 👋\n\n` +
@@ -255,8 +258,8 @@ export function ReservationDialog({
       `🕒 Restitution : ${v.endTime}\n` +
       `⏱ Durée : ${d} jour(s)\n` +
       `💰 Tarif estimé : ${t} DH (${priceOf(v.car)} DH/jour)\n` +
-      `\n🖼 Photo CIN : ${cinUrl}\n` +
-      `🖼 Photo Permis : ${permisUrl}\n` +
+      `\n🖼 Photo CIN : ${cinLink}\n` +
+      `🖼 Photo Permis : ${permisLink}\n` +
       (reviewLink ? `\n⭐ Lien pour laisser un avis (après la fin de la location) : ${reviewLink}\n` : "") +
       (v.notes ? `\n📝 Notes : ${v.notes}\n` : "") +
       `\nMerci de me confirmer la disponibilité.`;

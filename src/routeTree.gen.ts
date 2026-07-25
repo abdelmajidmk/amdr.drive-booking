@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AvisTokenRouteImport } from './routes/avis.$token'
 import { Route as ApiPublicReviewsRouteImport } from './routes/api/public/reviews'
+import { Route as ApiPublicDocRouteImport } from './routes/api/public/doc'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,34 +29,48 @@ const ApiPublicReviewsRoute = ApiPublicReviewsRouteImport.update({
   path: '/api/public/reviews',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDocRoute = ApiPublicDocRouteImport.update({
+  id: '/api/public/doc',
+  path: '/api/public/doc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/avis/$token': typeof AvisTokenRoute
+  '/api/public/doc': typeof ApiPublicDocRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/avis/$token': typeof AvisTokenRoute
+  '/api/public/doc': typeof ApiPublicDocRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/avis/$token': typeof AvisTokenRoute
+  '/api/public/doc': typeof ApiPublicDocRoute
   '/api/public/reviews': typeof ApiPublicReviewsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/avis/$token' | '/api/public/reviews'
+  fullPaths: '/' | '/avis/$token' | '/api/public/doc' | '/api/public/reviews'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/avis/$token' | '/api/public/reviews'
-  id: '__root__' | '/' | '/avis/$token' | '/api/public/reviews'
+  to: '/' | '/avis/$token' | '/api/public/doc' | '/api/public/reviews'
+  id:
+    | '__root__'
+    | '/'
+    | '/avis/$token'
+    | '/api/public/doc'
+    | '/api/public/reviews'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AvisTokenRoute: typeof AvisTokenRoute
+  ApiPublicDocRoute: typeof ApiPublicDocRoute
   ApiPublicReviewsRoute: typeof ApiPublicReviewsRoute
 }
 
@@ -82,24 +97,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicReviewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/doc': {
+      id: '/api/public/doc'
+      path: '/api/public/doc'
+      fullPath: '/api/public/doc'
+      preLoaderRoute: typeof ApiPublicDocRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AvisTokenRoute: AvisTokenRoute,
+  ApiPublicDocRoute: ApiPublicDocRoute,
   ApiPublicReviewsRoute: ApiPublicReviewsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
